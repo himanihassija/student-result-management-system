@@ -1,0 +1,135 @@
+import json
+import os
+
+FILE_NAME = "students.json"
+
+def load_data():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "r") as file:
+            return json.load(file)
+    return {}
+
+def save_data(data):
+    with open(FILE_NAME, "w") as file:
+        json.dump(data, file, indent=4)
+
+def calculate_grade(percentage):
+    if percentage >= 90:
+        return "A+"
+    elif percentage >= 80:
+        return "A"
+    elif percentage >= 70:
+        return "B"
+    elif percentage >= 60:
+        return "C"
+    elif percentage >= 50:
+        return "D"
+    else:
+        return "Fail"
+
+def add_student(data):
+    roll = input("Enter Roll Number: ")
+    if roll in data:
+        print("Student already exists.")
+        return
+
+    name = input("Enter Name: ")
+    marks = []
+
+    for subject in ["Maths", "Science", "English", "Computer", "Social"]:
+        mark = int(input(f"Enter marks for {subject}: "))
+        marks.append(mark)
+
+    total = sum(marks)
+    percentage = total / len(marks)
+    grade = calculate_grade(percentage)
+
+    data[roll] = {
+        "name": name,
+        "marks": marks,
+        "total": total,
+        "percentage": percentage,
+        "grade": grade
+    }
+
+    save_data(data)
+    print("Student added successfully.")
+
+def view_student(data):
+    roll = input("Enter Roll Number: ")
+    if roll not in data:
+        print("Student not found.")
+        return
+
+    student = data[roll]
+    print("\n--- Student Result ---")
+    print("Name:", student["name"])
+    print("Marks:", student["marks"])
+    print("Total:", student["total"])
+    print("Percentage:", student["percentage"])
+    print("Grade:", student["grade"])
+
+def view_all_students(data):
+    if not data:
+        print("No records found.")
+        return
+
+    print("\n--- All Student Results ---")
+    for roll, student in data.items():
+        print(f"\nRoll No: {roll}")
+        print("Name:", student["name"])
+        print("Percentage:", student["percentage"])
+        print("Grade:", student["grade"])
+
+def update_marks(data):
+    roll = input("Enter Roll Number: ")
+    if roll not in data:
+        print("Student not found.")
+        return
+
+    marks = []
+    for subject in ["Maths", "Science", "English", "Computer", "Social"]:
+        mark = int(input(f"Enter new marks for {subject}: "))
+        marks.append(mark)
+
+    total = sum(marks)
+    percentage = total / len(marks)
+    grade = calculate_grade(percentage)
+
+    data[roll]["marks"] = marks
+    data[roll]["total"] = total
+    data[roll]["percentage"] = percentage
+    data[roll]["grade"] = grade
+
+    save_data(data)
+    print("Marks updated successfully.")
+
+def main():
+    data = load_data()
+
+    while True:
+        print("\n--- Student Result Management System ---")
+        print("1. Add Student")
+        print("2. View Student Result")
+        print("3. View All Students")
+        print("4. Update Marks")
+        print("5. Exit")
+
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            add_student(data)
+        elif choice == "2":
+            view_student(data)
+        elif choice == "3":
+            view_all_students(data)
+        elif choice == "4":
+            update_marks(data)
+        elif choice == "5":
+            print("Exiting program.")
+            break
+        else:
+            print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
